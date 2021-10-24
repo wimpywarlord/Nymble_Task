@@ -1,15 +1,22 @@
-import { creteRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
 
 
 // WE ARE IMPORTING THE ROUTER
-import About from '../views/About'
+import About from '../views/About.vue'
+import Home from "../views/Home.vue"
 
 const routes = [
     {
         path: "/about",
         name: "About",
-        // THIS IS THE COMPONENT WE WANT TO RENDER
+        // THIS IS THE VIEW WE WANT TO RENDER
         component: About
+    },
+    {
+        path: "/",
+        name: "Home",
+        // THIS IS THE VIEW WE WANT TO RENDER
+        component: Home
     }
 ]
 

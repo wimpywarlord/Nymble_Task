@@ -1,7 +1,10 @@
 <template>
     <footer>
         <p>Copyright &copy; 2021 </p>
-        <a href="/about"> About </a>
+        <!-- HREF REFRESH THE PAGE 0 -->
+        <!-- WHICH WE DONT WANT IN SPA -->
+        <!-- SO USE router-link -->
+        <router-link to="/about"> About </router-link>
     </footer>
 </template>
 

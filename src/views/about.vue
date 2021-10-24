@@ -1,15 +1,12 @@
 <template>
-    <h1>About</h1>
+    <h3>Version 1.0.0</h3>
+    <router-link to="/">Go Back</router-link>
 </template>
 
 <script>
-import { defineComponent } from '@vue/composition-api'
+export default {
 
-export default defineComponent({
-    setup() {
-        
-    },
-})
+}
 </script>
 
 <style scoped>
