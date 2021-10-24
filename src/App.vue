@@ -17,7 +17,7 @@
     <!-- deleteTask() is our defined function where we actually remove the task from list -->
     <!-- DONT PASS ID HERE, IT WILL AUTOMATICALLY RECIEVE BODY OF EMIT WHILE DEFINING INSIDE THE METHODS -->
     <Tasks @toggle-reminder="toggleReminder" @delete-task="deleteTask" :tasks="tasks"/>
-
+    <Footer />
   </div>
 </template>
 
@@ -25,6 +25,7 @@
 import Header from "./components/Header.vue"
 import Tasks from "./components/Tasks.vue"
 import AddTask from "./components/AddTask.vue"
+import Footer from "./components/Footer.vue"
 
 export default {
   name: 'App',
@@ -32,6 +33,7 @@ export default {
     Header,
     Tasks,
     AddTask,
+    Footer,
   },
   // DATA IS FUNCTION WHICH RETURNS AN OBJECT
   data () {
@@ -41,18 +43,37 @@ export default {
     }
   },
   methods: {
+    async fetchTasks() {
+      const res = await fetch('api/tasks');
+      const data = await res.json();
+      return data;
+    },
+    async fetchSingleTasks(id) {
+      const res = await fetch(`api/tasks/${id}`);
+      const data = await res.json();
+      return data;
+    },
     toggleAddTask() {
       // console.log("Asdhasdhkajhkj")
       // console.log(this.showAddTask)
       this.show_hide_task_form = !this.show_hide_task_form;
       // console.log(this.showAddTask)
     },
-    addTask(newTask){
-      this.tasks = [...this.tasks, newTask]
+    async addTask(newTask){
+      const res = await fetch ('api/tasks', {
+        method : "POST",
+        headers : {
+          'Content-type' : 'application/json',
+        },
+        body: JSON.stringify(newTask),
+      })
+      const data = await res.json();
+      this.tasks = [...this.tasks, data]
     },
-    deleteTask(id) {
+    async deleteTask(id) {
       // WE CAN ACCESS TASKS THE DATA OBJECT FROM HERE DIRECTly By using this 
-      console.log('task', id);
+    
+    console.log('task', id);
 
     //  CONFIRM IS A VANILLA JAVASCRIPT FUNCTION 
 
@@ -62,10 +83,14 @@ export default {
 
       // SO THE CONDITION INSIDE SAYS 
       // RETURN ALL WHERE TASK.ID is not equal to the ID of the TASK BEING REMOVED 
-          this.tasks = this.tasks.filter((task) => task.id !== id);
+      const res = await fetch(`/api/tasks/${id}`, {
+        method : "DELETE",
+      })
+      res.status == 200 ? this.tasks = this.tasks.filter((task) => task.id !== id) : alert("ERROR ! TRY AGAIN.");
+          
       }
     },
-    toggleReminder(id) 
+    async toggleReminder(id) 
     {
       // this.tasks = this.tasks.map((task) => { task.id === id ? {...task, reminder : !task.reminder} : task  })}
       console.log(id)
@@ -75,6 +100,20 @@ export default {
       //     task.reminder = !task.reminder;
       //   }
       // })
+      const taskToToggle = await this.fetchSingleTasks(id);
+
+      taskToToggle.reminder = !taskToToggle.reminder;
+
+      const udtTask = taskToToggle;
+
+      const res = await fetch(`api/tasks/${id}`,{
+        method : 'PUT',
+        headers : {
+          'Content-type' : 'application/json',  
+        },
+        body : JSON.stringify(udtTask),
+      })
+
       this.tasks.forEach(element => {
         if (element.id === id) {
             element.reminder = !element.reminder;
@@ -86,26 +125,9 @@ export default {
   // LIFE CYCLE METHODS
   // CREATED IS USED FOR MAKING HTTP REQUESTS FOR MAKING API CALLS
   // WHEN YOU WANT DATA TO BE LOADED BEFORE YOUR PAGE RENDERS
-  created () {
+  async created () {
     // THIS FUNCTION CAN ACCESS TASKS by this KEYWORD
-    this.tasks = [{
-      id : 1,
-      text : "SADkjaslkdja dalksdj asdlj 12es",
-      day : "asnkldja asljdqlw12",
-      reminder : true,
-    },
-    {
-      id : 2,
-      text : "2 asdhasjhd k a dalksdj asdlj 12es",
-      day : "iytpouip asljdqlw12",
-      reminder : false,
-    },
-    {
-      id : 3,
-      text : "3 asdsjopq2 dalksdj asdlj 12es",
-      day : "123879edahs asljdqlw12",
-      reminder : true,
-    }]
+    this.tasks = await this.fetchTasks();
   }
 }
 </script>
